@@ -92,10 +92,27 @@ export function upiLink({ vpa, name, amountPaise, note }) {
   if (note) q.push(["tn", String(note).trim().slice(0, 80)]);
   return "upi://pay?" + q.map(([k, val]) => k + "=" + encodeURIComponent(val)).join("&");
 }
-export function waLink(number, text) {
-  let n = String(number || "").replace(/\D/g, "");
-  if (n.length === 10) n = "91" + n;
-  if (n.length === 11 && n[0] === "0") n = "91" + n.slice(1);
+/** Normalise a pasted phone number to WhatsApp's international digits.
+ *  Accepts "7200273672", "72002 73672", "+91 72002 73672", "+91-7200273672",
+ *  "917200273672", "07200273672", "0091 7200273672", and text copied from
+ *  contacts (with hidden direction marks or words around it). */
+export function waNumber(number) {
+  const raw = String(number || "");
+  const plus = /\+\s*\d/.test(raw);
+  let n = raw.replace(/\D/g, "");
+  if (n.startsWith("00")) n = n.slice(2);                 // 0091… international prefix
+  else if (!plus && n.length === 11 && n[0] === "0") n = n.slice(1); // 0 + 10-digit mobile
+  if (n.length === 10) n = "91" + n;                       // plain Indian mobile
+  if (n.length === 13 && n.startsWith("910")) n = "91" + n.slice(3); // +91 0XXXXXXXXXX
   if (n.length < 11 || n.length > 15) return null;
+  return n;
+}
+export function waLink(number, text) {
+  const n = waNumber(number);
+  if (!n) return null;
   return "https://wa.me/" + n + (text ? "?text=" + encodeURIComponent(text) : "");
+}
+/** "917200273672" -> "+91 72002 73672" for display. */
+export function waPretty(n) {
+  return n && n.length === 12 && n.startsWith("91") ? `+91 ${n.slice(2, 7)} ${n.slice(7)}` : n ? "+" + n : "";
 }

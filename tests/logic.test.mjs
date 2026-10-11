@@ -11,7 +11,7 @@ import { checkGSTIN, gstinCheckChar, checkPAN, checkIFSC, checkPIN } from "../as
 import { amountInWords, indianWords, intlWords } from "../assets/lib/words.js";
 import { impose, sheetsNeeded, INCH } from "../assets/lib/impose.js";
 import { evaluate } from "../assets/lib/calc.js";
-import { emi, financialYear, parseDate, workingDays, addMonths, isoDate, upiLink, waLink, convert, LENGTH, AREA, priceFromCost } from "../assets/lib/misc.js";
+import { emi, financialYear, parseDate, workingDays, addMonths, isoDate, upiLink, waLink, waNumber, waPretty, convert, LENGTH, AREA, priceFromCost } from "../assets/lib/misc.js";
 import { PRINT9_CODES } from "../assets/lib/print9-codes.js";
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -295,4 +295,23 @@ test("Every tool in the menu has a module", async () => {
   const ids = [...src.matchAll(/\{ id: "([\w-]+)"/g)].map((m) => m[1]);
   assert.equal(ids.length, 21);
   for (const id of ids) assert.ok(fs.existsSync(path.join(ROOT, "tools", id + ".js")), "missing tools/" + id + ".js");
+});
+
+test("WhatsApp number accepts every common way of writing an Indian mobile", () => {
+  const want = "917200273672";
+  for (const v of ["7200273672", "72002 73672", "+91 72002 73672", "+917200273672", "+91-72002-73672",
+    "+91 (720) 027-3672", "917200273672", "07200273672", "0091 7200273672", "+91 07200273672",
+    "\u202a+91 72002 73672\u202c", "Mobile: +91 72002 73672", " 72002-73672 "]) {
+    assert.equal(waNumber(v), want, JSON.stringify(v));
+  }
+  assert.equal(waPretty(want), "+91 72002 73672");
+  assert.equal(waNumber("+1 415 555 0100"), "14155550100");
+  assert.equal(waNumber("+44 20 7946 0958"), "442079460958");
+  assert.equal(waNumber("98400"), null);
+  assert.equal(waLink("+91 72002 73672", "Order ready"), "https://wa.me/917200273672?text=Order%20ready");
+});
+test("GST remove mode ignores round-off and returns the exact amount entered", () => {
+  const g = calcGST(99999, 18, { mode: "remove", inter: true, round: "off" });
+  assert.equal(g.taxable + g.tax, 99999);
+  assert.equal(g.grand, 99999);
 });

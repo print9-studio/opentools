@@ -82,8 +82,8 @@ export default function (root) {
     svg.append(el("rect", { x: 0, y: 0, width: W, height: H, fill: "var(--card)", stroke: "var(--muted)", "stroke-width": 0.8 }));
     svg.append(el("rect", { x: m, y: m, width: W - 2 * m, height: H - 2 * m, fill: "none", stroke: "var(--line)", "stroke-dasharray": "3 3", "stroke-width": 0.6 }));
     for (const bx of r.boxes) {
-      const col = bx.rot ? "#d7263d" : "#1546b0";
-      svg.append(el("rect", { x: m + bx.x, y: m + bx.y, width: bx.w, height: bx.h, fill: bx.rot ? "rgba(215,38,61,.12)" : "rgba(21,70,176,.12)", stroke: col, "stroke-width": 0.4 }));
+      const col = bx.rot ? "#FF6B57" : "#1B3788";
+      svg.append(el("rect", { x: m + bx.x, y: m + bx.y, width: bx.w, height: bx.h, fill: bx.rot ? "rgba(255,107,87,.16)" : "rgba(27,55,136,.12)", stroke: col, "stroke-width": 0.4 }));
       if (bl > 0) svg.append(el("rect", { x: m + bx.x + bl, y: m + bx.y + bl, width: bx.w - 2 * bl, height: bx.h - 2 * bl, fill: "none", stroke: col, "stroke-width": 0.3, "stroke-dasharray": "1.5 1" }));
     }
     return svg;

@@ -6,7 +6,7 @@ const CACHE = "p9ot-" + VERSION;
 
 const CORE = [
   "./", "index.html", "manifest.webmanifest",
-  "assets/app.css", "assets/app.js", "assets/ui.js", "assets/icon.svg", "assets/icon-180.png", "assets/icon-192.png",
+  "assets/app.css", "assets/app.js", "assets/ui.js", "assets/icon.svg", "assets/icon-180.png", "assets/icon-192.png", "assets/logo-light.png", "assets/logo-dark.png",
   "assets/lib/money.js", "assets/lib/gst.js", "assets/lib/ids.js", "assets/lib/words.js", "assets/lib/impose.js",
   "assets/lib/misc.js", "assets/lib/calc.js", "assets/lib/print9-codes.js", "assets/lib/qr.js", "assets/vendor/qrcode.mjs",
   "tools/gst.js", "tools/calc.js", "tools/invoice.js", "tools/words.js", "tools/margin.js", "tools/percent.js",
