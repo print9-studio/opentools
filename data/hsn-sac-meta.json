@@ -1,0 +1,10 @@
+{
+ "source": "https://tutorial.gst.gov.in/downloads/HSN_SAC.xlsx",
+ "publisher": "GSTN (Goods and Services Tax Network), Government of India",
+ "fetched_utc": "2026-10-11",
+ "sha256": "051108e31063f1ef0d6dfb005a622bcc848878fa2d94fae51a73e67f8916871e",
+ "counts": {
+  "HSN": 21928,
+  "SAC": 681
+ }
+}
