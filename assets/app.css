@@ -1,6 +1,6 @@
 /* Print9 OpenTools — one small stylesheet, no web fonts (instant load). */
 :root {
-  --blue: #1B3788; --blue-2: #142a6b; --red: #DA3025; --coral: #FF6B57; --ink: #14161a;
+  --blue: #1B3788; --blue-2: #142a6b; --red: #DA3025; --ink: #14161a;
   --bg: #f4f5f7; --card: #ffffff; --text: #14161a; --muted: #5c6370; --line: #e3e6eb;
   --soft: #eef2fb; --ok: #127a3e; --ok-bg: #e7f6ec; --bad: #b3261e; --bad-bg: #fdecea;
   --warn: #8a5a00; --warn-bg: #fff4dc; --focus: #1B3788;
