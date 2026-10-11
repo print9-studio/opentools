@@ -1,0 +1,93 @@
+# Print9 OpenTools - build and publish
+#
+# 1. Downloads the official GSTN HSN/SAC master Excel file.
+# 2. Converts it to data/hsn-sac.json (refuses bad/short files).
+# 3. Saves the refreshed data back to the repo if it changed.
+# 4. Publishes the site to GitHub Pages.
+#
+# Runs on every push to main, on the 1st and 15th of each month
+# (to pick up GSTN updates), and on demand from the Actions tab.
+
+name: Build and publish
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "17 2 1,15 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install converter dependency
+        run: pip install openpyxl==3.1.5
+
+      - name: Download official HSN/SAC master from GSTN
+        id: dl
+        continue-on-error: true
+        run: |
+          curl -fL --retry 4 --retry-delay 15 --max-time 300 \
+            -A "Mozilla/5.0 (Print9 OpenTools data refresh)" \
+            -o /tmp/HSN_SAC.xlsx \
+            "https://tutorial.gst.gov.in/downloads/HSN_SAC.xlsx"
+          ls -l /tmp/HSN_SAC.xlsx
+
+      - name: Convert to website data (validated)
+        id: conv
+        if: steps.dl.outcome == 'success'
+        continue-on-error: true
+        run: python3 scripts/build_hsn.py /tmp/HSN_SAC.xlsx data
+
+      - name: Save refreshed data to the repo
+        if: steps.conv.outcome == 'success'
+        run: |
+          if [ -n "$(git status --porcelain data)" ]; then
+            git config user.name "print9-opentools-bot"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add data
+            git commit -m "Refresh HSN/SAC master from GSTN"
+            git push
+          else
+            echo "Data unchanged."
+          fi
+
+      - name: Report data status
+        run: |
+          echo "Download: ${{ steps.dl.outcome }}  Convert: ${{ steps.conv.outcome }}"
+          if [ -f data/hsn-sac-meta.json ]; then cat data/hsn-sac-meta.json; else echo "No HSN data yet"; fi
+
+      - name: Stamp offline-cache version (so phones pick up updates)
+        run: python3 scripts/stamp_version.py
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
