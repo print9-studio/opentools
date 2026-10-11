@@ -100,7 +100,10 @@ function renderHome() {
       return;
     }
     const recent = store.get("recent", []).map((id) => byId[id]).filter(Boolean).slice(0, 4);
-    if (recent.length) list.append(h("div", { class: "sec-title" }, "Recently used"), h("div", { class: "grid" }, recent.map(toolCard)));
+    if (recent.length) list.append(
+      h("div", { class: "sec-title sec-row" }, "Recently used",
+        h("button", { class: "clear-btn", type: "button", "aria-label": "Clear recently used", onclick: () => { store.set("recent", []); draw(); } }, "Clear")),
+      h("div", { class: "grid" }, recent.map(toolCard)));
     for (const [cat, label] of CATS) {
       list.append(h("div", { class: "sec-title" }, label), h("div", { class: "grid" }, TOOLS.filter((t) => t.cat === cat).map(toolCard)));
     }
