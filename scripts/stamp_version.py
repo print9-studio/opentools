@@ -13,7 +13,7 @@ h = hashlib.sha256()
 for dirpath, dirnames, filenames in os.walk(ROOT):
     dirnames[:] = sorted(d for d in dirnames if d not in SKIP_DIRS)
     for name in sorted(filenames):
-        if name == "sw.js":
+        if name in ("sw.js", "version.json"):
             continue
         p = os.path.join(dirpath, name)
         h.update(os.path.relpath(p, ROOT).encode())
@@ -39,3 +39,10 @@ html = re.sub(r"<span data-build-date>[^<]*</span>", f"<span data-build-date>{is
 html = re.sub(r"<span data-build-id>[^<]*</span>", f"<span data-build-id>{version[:7]}</span>", html)
 open(idx, "w", encoding="utf-8").write(html)
 print("footer stamped:", ist.strftime('%d %b %Y'), version[:7])
+
+# Version file read by Ops Board: same build id as the footer.
+import json
+with open(os.path.join(ROOT, "version.json"), "w", encoding="utf-8") as f:
+    json.dump({"service": "p9-opentools", "build": version[:7], "built_at": ist.strftime("%Y-%m-%d")}, f, indent=2)
+    f.write("\n")
+print("version.json stamped:", version[:7])
